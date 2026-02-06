@@ -24,11 +24,11 @@ class Person():
         
     def eat(self,meals):
         if meals == 3:
-            self.healthRate= "100%"
+            self.healthRate= 100
         elif meals == 2:
-             self.healthRate= "75%" 
+             self.healthRate= 75
         elif meals == 1:
-            self.healthRate= "25%"
+            self.healthRate= 25
         
     def buy(self,items):
         self.money-= items*10
@@ -77,12 +77,19 @@ class car():
             self.fuelRate-= required_fuel
             self.stop(0)
         else:
+            covered_distance= (self.fuelRate/10)*10
+            self.fuelRate = 0
+            self.stop(distance - covered_distance)
             
         
-    def stop(self):
+    def stop(self,remaining_distance):
+        self.velocity = 0
+        if remaining_distance == 0:
+            print("You arrived at your destination")
+        else:
+            print(f"You ran out of fuel. Remaining distance: {remaining_distance} km")
+            
         
-   
-    
    
     
 class Employee(Person):
@@ -103,16 +110,71 @@ class Employee(Person):
             self.mood= "lazy"
         
     def drive(self,distance):
-        ###############
-        pass
+        self.car.run(60,distance)
         
     def refuel(self,gasAmount=100):
-        ##############
-        pass
+        self.car.fuelRate += gasAmount
+        
+    def send_mail(self,to,subject):
+        print(f"mail sent to {to} regarding {subject}")
         
         
-    def send_mail(self,):
+
+class Office():
+    employeesNum= 0
+    
+    def __init__(self,name):
+        self.name= name
+        self.employees= []
         
+    
+    @classmethod   
+    def change_emps_num(cls, num):
+        cls.employeesNum= num
+        
+    def get_all_employees(self):
+        return self.employees
+    
+    def get_employee(self, empid):
+        for emp in self.employees:
+           if emp.id == empid:
+              return emp
+        return None
+    
+    def hire(self, employee):
+        self.employees.append(employee)
+        Office.employeesNum+=1
+        
+    def fire(self,empid):
+        self.employees = [e for e in self.employees if e.id != empid] 
+        Office.employeesNum -= 1
+        
+    def deduct(self, empid, deduction):
+        emp= self.get_employee(empid)
+        if emp:
+            emp.salary -= deduction
+    
+    def reward(self,empid,reward):
+        emp= self.get_employee(empid)
+        if emp:
+            emp.salary += reward
+            
+    
+    @staticmethod    
+    def calculate_lateness(targetHour,moveHour,distance,velocity):
+        travel_time= distance/velocity
+        arrival_time= moveHour+travel_time
+        return arrival_time > targetHour
+    
+    def check_lateness(self,empid,moveHour):
+        emp= self.get_employee(empid)
+        isLate= self.calculate_lateness(9, moveHour, emp.distanceToWork, 60)
+        
+        if isLate:
+            self.deduct(empid, 10)
+        else:
+            self.reward(empid, 10)
+    
     
     
     
